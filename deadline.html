@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Daftar Tugas Sistem Informasi</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+
+        /* ==== BACKGROUND ABSTRAK PINK ==== */
+        background:
+            radial-gradient(600px 400px at 10% 20%, rgba(255,182,193,0.45), transparent 30%),
+            radial-gradient(500px 300px at 85% 75%, rgba(255,105,180,0.28), transparent 25%),
+            radial-gradient(300px 200px at 50% 10%, rgba(255,230,240,0.35), transparent 30%),
+            linear-gradient(135deg, #fff0f6 0%, #ffd6e8 30%, #ff9fcf 60%, #ff6aa3 100%);
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .task-container {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .task-card {
+        width: 300px;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+        transition: 0.2s;
+    }
+
+    .task-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0px 6px 15px rgba(0,0,0,0.15);
+    }
+
+    .task-title {
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #2c3e50;
+    }
+
+    .deadline {
+        color: #555;
+        margin-bottom: 5px;
+    }
+
+    .lecturer {
+        font-weight: bold;
+        margin-bottom: 15px;
+    }
+
+    .detail-btn {
+        background: #0d6efd;
+        border: none;
+        padding: 8px 16px;
+        color: white;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .detail-btn:hover {
+        background: #0b5ed7;
+    }
+</style>
+
+</head>
+<body>
+
+
+<h2 style="text-align:center;">Daftar Tugas Sistem Informasi</h2>
+
+<div class="task-container" id="taskContainer"></div>
+
+    <!-- Kartu 1 --
+
+</div>
+
+<!-- TOMBOL TAMBAH (tanda +) -->
+<button id="addBtn" aria-label="Tambah tugas" title="Tambah tugas" style="
+    position: fixed;
+    right: 28px;
+    bottom: 28px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: none;
+    background: #28a745;
+    color: white;
+    font-size: 32px;
+    line-height: 0;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    cursor: pointer;
+">+</button>
+
+<!-- MODAL FORM -->
+<div id="modal" style="
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+">
+    <div role="dialog" aria-modal="true" style="
+        background: #fff;
+        padding: 18px;
+        border-radius: 10px;
+        width: 320px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+    ">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <strong>Tambah Tugas</strong>
+            <button id="closeModal" aria-label="Tutup" style="
+                background: transparent;
+                border: none;
+                font-size: 20px;
+                cursor: pointer;
+            ">&times;</button>
+        </div>
+
+        <form id="taskForm" style="display:grid;gap:8px;">
+            <input name="title" placeholder="Judul tugas" required style="padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;">
+            <input name="deadline" type="date" style="padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;">
+            <input name="lecturer" placeholder="Dosen / pemberi tugas" style="padding:8px;border:1px solid #ccc;border-radius:6px;font-size:14px;">
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px;">
+                <button type="button" id="cancelBtn" style="padding:8px 12px;border-radius:6px;border:1px solid #ccc;background:#fff;cursor:pointer;">Batal</button>
+                <button type="submit" style="padding:8px 12px;border-radius:6px;border:none;background:#0d6efd;color:#fff;cursor:pointer;">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Elemen
+    const addBtn = document.getElementById('addBtn');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const taskForm = document.getElementById('taskForm');
+    const taskContainer = document.getElementById('taskContainer');
+
+    // Buka modal
+    function openModal() { modal.style.display = 'flex'; document.querySelector('#modal input[name="title"]').focus(); }
+    function hideModal() { modal.style.display = 'none'; taskForm.reset(); }
+
+    addBtn.addEventListener('click', openModal);
+    closeModal.addEventListener('click', hideModal);
+    cancelBtn.addEventListener('click', hideModal);
+
+    // Tutup saat klik di luar dialog
+    modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
+    // Esc untuk tutup
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hideModal(); });
+
+    // Format tanggal ke lokal ID (contoh: 22 Okt 2025)
+    function formatDate(value) {
+        if (!value) return '';
+        const d = new Date(value + 'T00:00:00');
+        return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+    }
+
+    // Submit form: tambah kartu tugas baru
+    taskForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const form = new FormData(taskForm);
+        const title = (form.get('title') || '').trim();
+        const deadlineVal = form.get('deadline') || '';
+        const lecturer = (form.get('lecturer') || '').trim();
+
+        if (!title) return;
+
+        const card = document.createElement('div');
+        card.className = 'task-card';
+        card.innerHTML = `
+            <div class="task-title">${escapeHtml(title)}</div>
+            <div class="deadline">${deadlineVal ? 'Deadline: ' + escapeHtml(formatDate(deadlineVal)) : ''}</div>
+            <div class="lecturer">${escapeHtml(lecturer)}</div>
+            <button class="detail-btn">Detail</button>
+        `;
+        taskContainer.prepend(card); // tambahkan di paling atas
+        hideModal();
+    });
+
+    // Fungsi kecil untuk mencegah injeksi HTML
+    function escapeHtml(s) {
+        return String(s)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+</script>
+
+</body>
+</html>

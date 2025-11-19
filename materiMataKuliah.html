@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>materi</title>
+</head>
+<style>
+    body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+
+            /* ==== BACKGROUND FOTO ==== */
+            background-image: url("background.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+    h2 {
+        background: white;
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 20px;
+        box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+        padding: 15px;
+        vertical-align: top;
+        border: 1px solid #00000033;
+    }
+
+    th {
+        background: #d7377f;
+        color: white;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .hari {
+        width: 15%;
+        font-weight: bold;
+        background: #f3a7cd;
+        text-align: center;
+    }
+
+    ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+</style>
+<body>
+    <div style="padding:20px; max-width:1000px; margin:0 auto;">
+        <h2>Materi Mata Kuliah</h2>
+        <p style="background:rgba(255,255,255,0.9); padding:8px; border-radius:6px;">
+            Unggah modul untuk setiap mata kuliah. Modul disimpan di browser (IndexedDB) dan dapat diunduh dari halaman ini.
+            Untuk membuat modul bisa diakses orang lain, Anda perlu menyimpan berkas di server atau layanan penyimpanan bersama (lihat catatan di bawah).
+        </p>
+
+        <!-- upload form -->
+        <div style="background:white; padding:15px; border-radius:8px; margin-top:12px;">
+            <form id="uploadForm">
+                <label for="courseSelect"><strong>Pilih Mata Kuliah</strong></label><br>
+                <select id="courseSelect" required style="padding:6px; margin-top:6px; width:100%; max-width:400px;">
+                    <!-- options dibangun lewat JS -->
+                </select>
+
+                <div style="margin-top:10px;">
+                    <label for="fileInput"><strong>Pilih Berkas Modul (PDF/DOC/ZIP/...)</strong></label><br>
+                    <input id="fileInput" type="file" required style="margin-top:6px;">
+                </div>
+
+                <div style="margin-top:10px;">
+                    <button type="submit" style="padding:8px 14px;">Unggah Modul</button>
+                    <button type="button" id="clearAllBtn" style="padding:8px 14px; margin-left:8px;">Hapus Semua Modul</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- table of courses and modules -->
+        <h3 style="margin-top:20px; background:white; display:inline-block; padding:6px 12px; border-radius:8px;">Daftar Mata Kuliah & Modul</h3>
+        <table id="courseTable" style="margin-top:12px;">
+            <thead>
+                <tr>
+                    <th style="width:6%;">No</th>
+                    <th style="width:30%;">Mata Kuliah</th>
+                    <th>Modul (klik untuk unduh)</th>
+                    <th style="width:12%;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- terisi lewat JS -->
+            </tbody>
+        </table>
+
+        <h3 style="margin-top:20px;">Materi Tersimpan (Local)</h3>
+        <ul id="savedList" style="background:white; padding:15px; border-radius:8px; list-style:none; min-height:40px;">
+            <!-- daftar materi tersimpan akan muncul di sini -->
+        </ul>
+
+        <p style="margin-top:8px; font-size:12px; color:#333;">
+            Catatan: Untuk dibagikan ke orang lain secara online, unggah berkas ke server atau layanan cloud/public storage dan simpan tautannya di database/server.
+        </p>
+    </div>
+
+    <!-- modal sederhana untuk detail -->
+    <div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); align-items:center; justify-content:center;">
+        <div style="background:white; padding:20px; width:90%; max-width:600px; border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,0.2);">
+            <h3 id="modalTitle"></h3>
+            <p id="modalDesc" style="white-space:pre-wrap;"></p>
+            <div style="text-align:right; margin-top:10px;">
+                <button id="saveBtn" style="margin-right:8px;">Simpan</button>
+                <button id="closeBtn">Tutup</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // data materi (bisa diperluas)
+        const materials = {
+            pbo: { title: "Pemrograman Berorientasi Objek", desc: "Ringkasan: Konsep OOP, kelas, objek, pewarisan, enkapsulasi, polimorfisme." },
+            ilmuDakwah: { title: "Ilmu Dakwah", desc: "Ringkasan: Sejarah dakwah, metode penyampaian pesan agama, etika dakwah." },
+            kepemimpinan: { title: "Kepemimpinan dan Manajemen Organisasi", desc: "Ringkasan: Teori kepemimpinan, pengambilan keputusan, manajemen sumber daya manusia." },
+            jaringan: { title: "Jaringan Komputer", desc: "Ringkasan: Topologi jaringan, model OSI, TCP/IP, perangkat jaringan, konfigurasi dasar." },
+            konsep: { title: "Konsep Sistem Terintegrasi", desc: "Ringkasan: Integrasi sistem, arsitektur, middleware, studi kasus sistem terintegrasi." },
+            etika: { title: "Etika Profesi dan Profesional", desc: "Ringkasan: Kode etik, tanggung jawab profesional, sikap dan perilaku di tempat kerja." },
+            sim: { title: "Sistem Informasi dan Manajemen", desc: "Ringkasan: Peran SI dalam organisasi, analisis kebutuhan, perancangan sistem informasi." },
+            transformasi: { title: "Transformasi Digital", desc: "Ringkasan: Digitalisasi proses, teknologi pendukung, manajemen perubahan, strategi transformasi." }
+        };
+
+        // IndexedDB helper (simpan berkas sebagai blob agar persist)
+        const DB_NAME = "materiDB";
+        const STORE_NAME = "files";
+        let dbPromise;
+
+        function openDB() {
+            if (dbPromise) return dbPromise;
+            dbPromise = new Promise((resolve, reject) => {
+                const req = indexedDB.open(DB_NAME, 1);
+                req.onupgradeneeded = e => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const store = db.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+                        store.createIndex("courseId", "courseId", { unique: false });
+                    }
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+            return dbPromise;
+        }
+
+        async function saveFileRecord(courseId, file) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, "readwrite");
+                const store = tx.objectStore(STORE_NAME);
+                const rec = {
+                    courseId,
+                    filename: file.name,
+                    mime: file.type || "application/octet-stream",
+                    blob: file,
+                    uploadedAt: Date.now()
+                };
+                const rq = store.add(rec);
+                rq.onsuccess = () => resolve(rq.result);
+                rq.onerror = () => reject(rq.error);
+            });
+        }
+
+        async function getAllFiles() {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, "readonly");
+                const store = tx.objectStore(STORE_NAME);
+                const rq = store.getAll();
+                rq.onsuccess = () => resolve(rq.result || []);
+                rq.onerror = () => reject(rq.error);
+            });
+        }
+
+        async function getFilesByCourse(courseId) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, "readonly");
+                const store = tx.objectStore(STORE_NAME);
+                const idx = store.index("courseId");
+                const rq = idx.getAll(IDBKeyRange.only(courseId));
+                rq.onsuccess = () => resolve(rq.result || []);
+                rq.onerror = () => reject(rq.error);
+            });
+        }
+
+        async function getFileById(id) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, "readonly");
+                const store = tx.objectStore(STORE_NAME);
+                const rq = store.get(Number(id));
+                rq.onsuccess = () => resolve(rq.result);
+                rq.onerror = () => reject(rq.error);
+            });
+        }
+
+        async function deleteFileById(id) {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, "readwrite");
+                const store = tx.objectStore(STORE_NAME);
+                const rq = store.delete(Number(id));
+                rq.onsuccess = () => resolve();
+                rq.onerror = () => reject(rq.error);
+            });
+        }
+
+        async function clearAllFiles() {
+            const db = await openDB();
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, "readwrite");
+                const store = tx.objectStore(STORE_NAME);
+                const rq = store.clear();
+                rq.onsuccess = () => resolve();
+                rq.onerror = () => reject(rq.error);
+            });
+        }
+
+        // render select and table
+        const courseSelect = document.getElementById("courseSelect");
+        const courseTableBody = document.querySelector("#courseTable tbody");
+        const savedList = document.getElementById("savedList");
+
+        function populateCourseSelect() {
+            courseSelect.innerHTML = "";
+            Object.keys(materials).forEach(key => {
+                const opt = document.createElement("option");
+                opt.value = key;
+                opt.textContent = materials[key].title;
+                courseSelect.appendChild(opt);
+            });
+        }
+
+        async function renderCourseTable() {
+            const allFiles = await getAllFiles();
+            courseTableBody.innerHTML = "";
+            const keys = Object.keys(materials);
+            keys.forEach((key, idx) => {
+                const tr = document.createElement("tr");
+                const tdNo = document.createElement("td");
+                tdNo.textContent = idx + 1;
+                tdNo.style.textAlign = "center";
+
+                const tdCourse = document.createElement("td");
+                tdCourse.innerHTML = `<strong>${materials[key].title}</strong><div style="font-size:12px;color:#444;margin-top:6px;">${materials[key].desc}</div>`;
+
+                const tdModules = document.createElement("td");
+                const files = allFiles.filter(f => f.courseId === key);
+                if (files.length === 0) {
+                    tdModules.innerHTML = "<em style='color:#666;'>Belum ada modul</em>";
+                } else {
+                    const ul = document.createElement("ul");
+                    ul.style.paddingLeft = "18px";
+                    ul.style.margin = "0";
+                    files.forEach(f => {
+                        const li = document.createElement("li");
+                        li.style.marginBottom = "6px";
+                        const a = document.createElement("a");
+                        a.href = "#";
+                        a.textContent = f.filename;
+                        a.addEventListener("click", async (ev) => {
+                            ev.preventDefault();
+                            const rec = await getFileById(f.id);
+                            if (!rec) return alert("Berkas tidak ditemukan.");
+                            const url = URL.createObjectURL(rec.blob);
+                            const down = document.createElement("a");
+                            down.href = url;
+                            down.download = rec.filename;
+                            document.body.appendChild(down);
+                            down.click();
+                            down.remove();
+                            setTimeout(() => URL.revokeObjectURL(url), 10000);
+                        });
+
+                        const delBtn = document.createElement("button");
+                        delBtn.textContent = "Hapus";
+                        delBtn.style.marginLeft = "8px";
+                        delBtn.addEventListener("click", async () => {
+                            if (!confirm("Hapus modul ini?")) return;
+                            await deleteFileById(f.id);
+                            await renderCourseTable();
+                            renderSavedList();
+                        });
+
+                        li.appendChild(a);
+                        li.appendChild(delBtn);
+                        ul.appendChild(li);
+                    });
+                    tdModules.appendChild(ul);
+                }
+
+                const tdActions = document.createElement("td");
+                tdActions.style.textAlign = "center";
+                const uploadHint = document.createElement("button");
+                uploadHint.textContent = "Unggah ke mata kuliah ini";
+                uploadHint.addEventListener("click", () => {
+                    courseSelect.value = key;
+                    document.getElementById("fileInput").focus();
+                });
+                tdActions.appendChild(uploadHint);
+
+                tr.appendChild(tdNo);
+                tr.appendChild(tdCourse);
+                tr.appendChild(tdModules);
+                tr.appendChild(tdActions);
+                courseTableBody.appendChild(tr);
+            });
+        }
+
+        async function renderSavedList() {
+            const allFiles = await getAllFiles();
+            savedList.innerHTML = "";
+            if (allFiles.length === 0) {
+                savedList.innerHTML = "<li style='color:#666;'>Belum ada materi tersimpan.</li>";
+                return;
+            }
+            allFiles.forEach(f => {
+                const li = document.createElement("li");
+                li.style.marginBottom = "8px";
+                li.innerHTML = `<strong>${materials[f.courseId]?.title || f.courseId}:</strong> ${f.filename}`;
+                const viewBtn = document.createElement("button");
+                viewBtn.textContent = "Unduh";
+                viewBtn.style.marginLeft = "12px";
+                viewBtn.addEventListener("click", async () => {
+                    const rec = await getFileById(f.id);
+                    if (!rec) return alert("Berkas tidak ditemukan.");
+                    const url = URL.createObjectURL(rec.blob);
+                    const down = document.createElement("a");
+                    down.href = url;
+                    down.download = rec.filename;
+                    document.body.appendChild(down);
+                    down.click();
+                    down.remove();
+                    setTimeout(() => URL.revokeObjectURL(url), 10000);
+                });
+                const delBtn = document.createElement("button");
+                delBtn.textContent = "Hapus";
+                delBtn.style.marginLeft = "8px";
+                delBtn.addEventListener("click", async () => {
+                    if (!confirm("Hapus modul ini?")) return;
+                    await deleteFileById(f.id);
+                    renderCourseTable();
+                    renderSavedList();
+                });
+                li.appendChild(viewBtn);
+                li.appendChild(delBtn);
+                savedList.appendChild(li);
+            });
+        }
+
+        // form handling
+        document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
+            if (!file) return alert("Pilih berkas modul untuk diunggah.");
+            const courseId = courseSelect.value;
+            try {
+                await saveFileRecord(courseId, file);
+                fileInput.value = "";
+                alert("Modul berhasil disimpan di local browser.");
+                await renderCourseTable();
+                await renderSavedList();
+            } catch (err) {
+                console.error(err);
+                alert("Gagal menyimpan modul.");
+            }
+        });
+
+        document.getElementById("clearAllBtn").addEventListener("click", async () => {
+            if (!confirm("Hapus semua modul yang tersimpan di browser?")) return;
+            await clearAllFiles();
+            await renderCourseTable();
+            await renderSavedList();
+        });
+
+        // modal handling (keperluan tombol detail sebelumnya)
+        const modal = document.getElementById("modal");
+        const modalTitle = document.getElementById("modalTitle");
+        const modalDesc = document.getElementById("modalDesc");
+        const saveBtn = document.getElementById("saveBtn");
+        let currentId = null;
+        function openModal(id) {
+            currentId = id;
+            const m = materials[id];
+            modalTitle.textContent = m.title;
+            modalDesc.textContent = m.desc || "";
+            modal.style.display = "flex";
+        }
+        function closeModal() {
+            currentId = null;
+            modal.style.display = "none";
+        }
+        document.getElementById("closeBtn").addEventListener("click", closeModal);
+        modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+
+        // initial render
+        (async function init() {
+            populateCourseSelect();
+            await openDB();
+            await renderCourseTable();
+            await renderSavedList();
+        })();
+    </script>
+</body>
+</html>

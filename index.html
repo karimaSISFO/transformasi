@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <head>
+    <link rel="stylesheet" href="style1.css">
+</head>
+
+
+    <title>Sistem Informasi - UMI</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+
+            /* ==== BACKGROUND FOTO ==== */
+            background-image: url("background.jpg");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* ====== HEADER KAMPUS ====== */
+        .header {
+            background: #f1e5be;
+            padding: 15px 40px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .header img {
+            width: 60px;
+        }
+
+        .header-text h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        .header-text p {
+            margin: 2px 0;
+            font-size: 14px;
+        }
+
+        /* ====== NAVBAR ====== */
+        nav {
+            background: #C11279;
+            padding: 10px 40px;
+        }
+
+        nav a {
+            margin-right: 20px;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        /* ====== HERO SECTION ====== */
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 60px 40px;
+        }
+
+        .hero-text {
+            width: 50%;
+        }
+
+        .hero-text h1 {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+
+        .hero-text p {
+            width: 80%;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* ====== FOTO LINGKARAN ====== */
+        .hero-img {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 6px dashed #E65186;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+</style>
+
+</head>
+
+<body>
+
+    <!-- HEADER KAMPUS -->
+    <div class="header">
+        <img src="umi.png" alt="Logo Kampus">
+        <div class="header-text">
+            <h2>Universitas Muslim Indonesia</h2>
+            <p>Fakultas Ilmu Komputer</p>
+            <p>B1 Sistem Informasi</p>
+        </div>
+    </div>
+
+    <!-- NAVBAR -->
+    <nav>
+        <a href="#">Beranda</a>
+        <a href="absen.html">Anggota</a>
+        <a href="jadwal.html">jadwal</a>
+        <a href="deadline.html">Deadline Tugas</a>
+        <a href="materiMataKuliah.html">Materi Mata Kuliah</a>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Akses informasi<br> Kuliah dengan lebih mudah</h1>
+            <p>
+                Tempat untuk melihat jadwal kuliah, absen, deadline tugas, serta materi 
+                pembelajaran dalam satu platform yang terorganisir.
+            </p>
+        </div>
+
+        <div class="hero-img">
+            <!-- ganti src dengan path gambar Anda -->
+            <img src="tumbal.jpg" alt="Foto Mahasiswa">
+        </div>
+    </section>
+<footer class="footer">
+    <div class="footer-container">
+
+        <!-- Kolom 1 -->
+        <div class="footer-column">
+            <img src="umi.png" alt="Logo UMI" width="80">
+            <h3>Fakultas Ilmu Komputer<br>UNIVERSITAS MUSLIM INDONESIA</h3>
+
+        </div>
+
+        <!-- Kolom 2 -->
+        <div class="footer-column">
+            <h3>Kontak & Sosial</h3>
+            <ul class="social-list" style="list-style:none;padding:0;margin:0;display:flex;gap:12px;align-items:center;">
+            <li>
+                <a href="https://www.instagram.com/artificial.archive24?igsh=eWk0eXpiczIyMGs0" 
+   target="_blank" 
+   rel="noopener noreferrer"
+   style="display:flex; align-items:center; gap:8px; text-decoration:none; color:white;">
+
+    <!-- ICON INSTAGRAM (SVG kamu sendiri) -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="white" stroke-width="2" viewBox="0 0 24 24">
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <circle cx="12" cy="12" r="4"></circle>
+        <circle cx="18" cy="6" r="1.5"></circle>
+    </svg>
+
+    <span>Instagram</span>
+</a>
+
+</a>
+
+            </li>
+            <li>
+                <a href="https://wa.me/6281234567890" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" style="color:inherit;text-decoration:none;display:inline-flex;align-items:center;gap:8px;">
+                <!-- WhatsApp SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 11.5A9 9 0 1 1 11.5 3 8.9 8.9 0 0 1 21 11.5z"></path>
+                    <path d="M17.5 14.5c-.4-.2-2.3-1.1-2.6-1.2-.3-.1-.5-.2-.7.2s-.8 1.2-.9 1.4c-.1.2-.2.3-.6.1-1.6-.8-2.7-1.5-3.7-3.6-.3-.5.3-.5.8-1.6.1-.2 0-.4-.1-.6-.1-.2-.7-1.8-.9-2.5-.2-.6-.4-.5-.6-.5-.2 0-.4 0-.6 0-.2 0-.6.1-.9.4-.4.3-1.1 1-1.1 2.5s1.2 2.9 1.4 3.1c.2.2 2 3.1 4.9 4.3 1.9.9 2.7 1 3.6 1 .6 0 1.8-.7 2-1.4.2-.7.2-1.3.1-1.4-.1-.1-.4-.2-.8-.4z"></path>
+                </svg>
+                <span style="font-size:14px;">WhatsApp</span>
+                </a>
+            </li>
+            </ul>
+            <h3>Mata Kuliah <br>Transformasi Digital</h3>
+        </div>
+
+        <!-- Kolom 3 -->
+        <div class="footer-column">
+            <h3>Kelompok</h3>
+            <ul>
+                <li><span>›</span> <a href="https://www.instagram.com/shfralma_/?utm_source=ig_web_button_share_sheet">Alma Shafira</a></li>
+                <li><span>›</span> <a href="https://www.instagram.com/rrinaa._?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Andi Nisrina Afifah Syahrul</a></li>
+                <li><span>›</span> <a href="https://www.instagram.com/gmatc_/?utm_source=ig_web_button_share_sheet">Asdityanti Khusnul Suryani S</a></li>
+                <li><span>›</span> <a href="https://www.instagram.com/9karima_?igsh=MWNjc3VxMWIyNTB0Nw==">Karima</a></li>
+                <li><span>›</span> <a href="https://www.instagram.com/mutmhrd?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Mutmainnah Hariadi</a></li>
+            </ul>
+        </div>
+
+        
+
+    </div>
+</footer>
+
+</body>
+
+</html>
